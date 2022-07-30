@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Get Images From PDF</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link href="/static/style.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+    <header>
+        <div class="collapse bg-dark" id="navbarHeader">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-8 col-md-7 py-4">
+                        <h4 class="text-white">About</h4>
+                        <p class="text-muted">This is a tool to extract images from PDF.<br> It serves to save you the trouble of cropping from PDF.</p>
+                    </div>
+                    <div class="col-sm-4 offset-md-1 py-4">
+                        <h4 class="text-white">Links</h4>
+                        <ul class="list-unstyled">
+                            <li><a href="https://translation-formatter.herokuapp.com" class="text-white">Translation Formatter</a></li>
+                            <li><a href="mailto:kota03u2024@gmail.com" class="text-white">Email Me</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="navbar navbar-dark bg-dark shadow-sm">
+            <div class="container d-flex justify-content-between">
+                <a href="/" class="navbar-brand d-flex align-items-center">
+                    <strong>Get Images From PDF</strong>
+                </a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main role="main">
+        <section class="jumbotron text-center">
+            <div class="container">
+                <h1 class="jumbotron-heading">Get Images From PDF</h1>
+                {% if request_type == "get" %}
+                <p class="lead text-muted">Simply upload the pdf file and extract the image.</p>
+                <div id="upFileWrap">
+                    <div id="inputFile">
+                        {% if message %}
+                        <p id="dropArea">Drop PDF File Here.<br><span class="text-danger">{{ message }}</span></p>
+                        {% else %}
+                        <p id="dropArea">Drop PDF File Here.</p>
+                        {% endif %}
+                        <div id="inputFileWrap">
+                            <div id="btnInputFile"><span>Select File</span></div>
+                            <div id="btnUploadFile"><span>Upload File</span></div>
+                            <form action="" method="POST" enctype="multipart/form-data">
+                                <input type="file" name="uploadFile" id="uploadFile">
+                                <input type="submit" name="submitFile" id="submitFile">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% elif request_type == "post" %}
+                <p class="lead text-muted">Simply upload the PDF file and extract the images.<br>The results of image extraction are as follows.<br>Data will be erased when reloading.<br><span class="text-info">{{ pdf_filename }}</span></p>
+                <p>
+                    <a class="btn btn-outline-secondary my-2" download href="{{ zip_file_path }}">Download All</a>
+                    <a href="/" class="btn btn-outline-secondary my-2">Reload Page</a>
+                </p>
+                {% endif %}
+            </div>
+        </section>
+
+        <div class="album py-5 bg-light">
+            <div class="container">
+                {% if request_type == "get" %}
+                <h4 class="mb-sm-4">How To Use</h4>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card mb-4 shadow-sm">
+                            <img class="card-img-top" src="/static/images/step-1.png">
+                            <div class="card-body">
+                                <h5 class="card-title">Step 1.</h5>
+                                <p class="card-text">Select the PDF file from which you want to extract images.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card mb-4 shadow-sm">
+                            <img class="card-img-top" src="/static/images/step-2.png">
+                            <div class="card-body">
+                                <h5 class="card-title">Step 2.</h5>
+                                <p class="card-text">Once selected, the name of the uploaded file will be displayed.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card mb-4 shadow-sm">
+                            <img class="card-img-top" src="/static/images/step-3.png">
+                            <div class="card-body">
+                                <h5 class="card-title">Step 3.</h5>
+                                <p class="card-text">After the upload is complete, the results of the image extraction will be displayed.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% elif request_type == "post" %}
+                <div class="row">
+                    {% for image_path in image_path_list %}
+                    <div class="col-md-4">
+                        <div class="card mb-4 shadow-sm">
+                            <img class="card-img-top" src="{{ image_path }}">
+                            <div class="card-body">
+                                <p class="card-text">{{ image_path[44:] }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="btn-group">
+                                        <a class="btn btn-sm btn-outline-secondary" download href="{{ image_path }}">Download</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer mt-auto py-3">
+        <div class="container">
+          <span class="text-muted">Copyright 2022 kotabook. All Rights Reserved.</span>
+        </div>
+    </footer>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="/static/script.js"></script>
+</body>
+</html>
