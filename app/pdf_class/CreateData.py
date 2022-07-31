@@ -9,9 +9,11 @@ class CreateData():
     # uuidを取得して、ディレクトリを作成する関数
     def get_unique_id(self):
         unique_id = uuid.uuid4()
-        tempolary_dir = f"{self.path}/{unique_id}"
-        os.makedirs(tempolary_dir, exist_ok=True)
-        return unique_id, tempolary_dir
+        images_dir = f"{self.path}/{unique_id}/images"
+        others_dir = f"{self.path}/{unique_id}/others"
+        os.makedirs(images_dir, exist_ok=True)
+        os.makedirs(others_dir, exist_ok=True)
+        return unique_id, images_dir, others_dir
 
     # jsonファイルに保存する関数
     def add_json(self, unique_id):

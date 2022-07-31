@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 class GetImage():
 
     # ファイルを読み込む関数
-    def get_fitz_pdf(s8elf, pdf_path):
+    def get_fitz_pdf(self, pdf_path):
         return fitz.open(pdf_path)
     
     # 画像データを取得する関数
@@ -43,8 +43,8 @@ class GetImage():
             return False
     
     # zipファイルを作成する関数
-    def create_zip_file(self, root_dir):
+    def create_zip_file(self, root_dir, move_dir):
         # zipファイルを作成
         shutil.make_archive("download_all", format="zip", root_dir=root_dir)
         # zipファイルを移動
-        shutil.move("/app/download_all.zip", root_dir)
+        shutil.move("/work/get-images-from-pdf/download_all.zip", move_dir)
