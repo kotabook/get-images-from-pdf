@@ -16,7 +16,8 @@ def allowed_file(filename):
 
 #Flaskオブジェクトの生成
 app = Flask(__name__)
-# 最大容量を指定
+
+# 最大容量を指定 (5MB)
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
 
 @app.route("/", methods=["GET", "POST"])
@@ -40,14 +41,14 @@ def index():
             # ファイルがpdfである場合、処理を行う
             elif allowed_file(pdf_filename):
 
-                unique_id, tempolary_dir = create_data.get_unique_id() # 画像保存先のパスを生成する
+                unique_id, images_dir, others_dir = create_data.get_unique_id() # 画像保存先のパスを生成する
                 create_data.add_json(unique_id=unique_id) # jsonファイルに情報を保存
-                pdf_file.save(os.path.join(tempolary_dir, pdf_filename)) # pdfを保存して読み込む
+                pdf_file.save(os.path.join(others_dir, pdf_filename)) # pdfを保存する
 
                 # try-except文
                 try:
                     # pdfをインポート
-                    doc = get_image.get_fitz_pdf(pdf_path=f"{tempolary_dir}/{pdf_filename}")
+                    doc = get_image.get_fitz_pdf(pdf_path=f"{others_dir}/{pdf_filename}")
                     # 画像データを取得
                     image_list = get_image.get_image_data(doc)
                 except:
@@ -57,15 +58,15 @@ def index():
                 # ページごとの画像を保存する
                 image_path_all_list = []
                 for page_num, image in enumerate(image_list):
-                    image_path_list = get_image.conduct_image_data(doc=doc, page_num=page_num,image=image, tempolary_dir=tempolary_dir)
+                    image_path_list = get_image.conduct_image_data(doc=doc, page_num=page_num,image=image, tempolary_dir=images_dir)
                     if image_path_list:
                         image_path_all_list += image_path_list
                 if image_path_all_list != []:
-                    # 圧縮ファイルを作成
-                    root_dir = "{}/{}".format(file_dir, unique_id)
-                    zip_path = "/static/{}/download_all.zip".format(unique_id)
-                    get_image.create_zip_file(root_dir=root_dir)
-                    return render_template("index.html", request_type="post", image_path_list=image_path_all_list, pdf_filename=pdf_filename, zip_file_path=zip_path)
+                    # 圧縮ファイルのダウンロードパスを作成
+                    # root_dir = "{}/{}/images".format(file_dir, unique_id)
+                    zip_file_path = "/static/{}/others/download_all.zip".format(unique_id)
+                    get_image.create_zip_file(root_dir=images_dir, move_dir=others_dir)
+                    return render_template("index.html", request_type="post", image_path_list=image_path_all_list, pdf_filename=pdf_filename, zip_file_path=zip_file_path)
                 else:
                     message = "Error. Could not detect image from PDF."
                     return render_template("index.html", request_type="get", message=message)
